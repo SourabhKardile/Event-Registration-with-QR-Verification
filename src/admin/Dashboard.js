@@ -11,7 +11,7 @@ export default function Dashboard() {
       const newData = [];
       querySnapshot.forEach((doc) => {
         const data = {
-          id: doc.id,
+          id: parseInt(doc.id),
           name: doc.data().name,
           phone: doc.data().phone,
           address: doc.data().address,
@@ -39,20 +39,24 @@ export default function Dashboard() {
       renderCell: (params) => {
         return (
           <button
+          onClick={() => {
+                alert(params.id);
+              }}
             style={{
+              borderRadius:5,
               border: "none",
-              padding: "0",
-              color: "blue",
-              backgroundColor: "transparent",
-              margin: "10px",
+              padding: 5,
+              paddingLeft:20,
+              paddingRight:20,
+              color: "#ffffff",
+              backgroundColor: "#0275d8",
+              margin: "5px",
               cursor: "pointer",
             }}
           >
             <i
-            style={{fontSize:20}}
-              onClick={() => {
-                console.log(params.id);
-              }}
+            style={{fontSize:17}}
+              
               className="trashIcon fa-sharp fa-solid fa-edit"
             ></i>
           </button>
@@ -68,13 +72,13 @@ export default function Dashboard() {
               style={{
                 border: "none",
                 padding: "0",
-                color: params.value === '0' ? 'red': 'green',
+                color: params.value === 1 ? 'green': 'red',
                 backgroundColor: "transparent",
                 margin: "10px",
                 cursor: "pointer",
               }}
             >
-              <i style={{fontSize:20}}
+              <i style={{fontSize:25}}
                 onClick={() => {
                   console.log(params.value);
                 }}
@@ -93,7 +97,6 @@ export default function Dashboard() {
       width: 500,
     },
   ];
-
   const rows = userData;
 
   return (
@@ -104,9 +107,8 @@ export default function Dashboard() {
           columns={columns}
           pagination
           pageSize={10}
-          checkboxSelection
-          onPageSizeChange={() => {}}
-          onSelectionModelChange={() => {}}
+          
+          
           
           autoHeight
           slots={{ toolbar: GridToolbar }}

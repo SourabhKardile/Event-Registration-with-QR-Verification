@@ -4,8 +4,18 @@ import {
   setDoc,
   runTransaction,
 } from "@firebase/firestore";
-import { firestore } from "./firebaseConfig";
+import { auth, firestore } from "./firebaseConfig";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
+const formatNumber = (number) => {
+  if (number < 10) {
+    return `00${number}`;
+  } else if (number < 100) {
+    return `0${number}`;
+  } else {
+    return `${number}`;
+  }
+};
 export const AddDocument = async (data) => {
   const sfDocRef = doc(firestore, "List", "counterId");
   let newPopulation = null;
@@ -18,7 +28,8 @@ export const AddDocument = async (data) => {
       }
       newPopulation = sfDoc.data().population + 1;
       transaction.update(sfDocRef, { population: newPopulation });
-      const newRef = doc(firestore, "List", newPopulation.toString());
+      const formattedPopulation = formatNumber(newPopulation);
+      const newRef = doc(firestore, "List", formattedPopulation);
       setDoc(newRef, data);
 
          });
@@ -30,3 +41,10 @@ export const AddDocument = async (data) => {
     return null;
   }
 };
+export const setUpRecaptcha = (number) =>{
+  const recaptchaVerifier = new RecaptchaVerifier(
+    auth, 'recaptcha-container', {}
+  );
+  recaptchaVerifier.render();
+  return signInWithPhoneNumber(auth, number, recaptchaVerifier);
+}
