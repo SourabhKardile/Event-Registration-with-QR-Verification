@@ -11,7 +11,8 @@ export default function Home() {
         const data = {
             name: name,
             phone: phone,
-            address: address
+            address: address,
+            confirm: 0
         }
        const code = await AddDocument(data)
         alert(code)
