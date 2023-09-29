@@ -20,6 +20,7 @@ export default function Home() {
         alert(code)
       }
   return (
+    <div className="main">
     <div className="container">
     <div className="title">Registration</div>
     <div className="content">
@@ -60,6 +61,7 @@ export default function Home() {
         </div>
       </form>
     </div>
+  </div>
   </div>
   )
 }

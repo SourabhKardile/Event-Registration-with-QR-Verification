@@ -1,14 +1,19 @@
 import './App.css';
 import Home from './Home';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Main from './admin/Main';
+import Dashboard from './admin/Dashboard';
+import ProtectedRoutes from './admin/ProtectedRoutes';
+import Login from './admin/Login';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/admin" element={<Main />} />
+        <Route  path="/admin" element={<Login />} />
+        <Route element={<ProtectedRoutes />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
       </Routes>
     </BrowserRouter>
     
