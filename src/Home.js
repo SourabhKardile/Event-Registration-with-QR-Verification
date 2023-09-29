@@ -8,9 +8,6 @@ export default function Home() {
     const [address, setAddress] = useState(null);
     const handleSubmit = async(event) => {
         event.preventDefault();
-        console.log(name);
-        console.log(phone);
-        console.log(address);
         const data = {
             name: name,
             phone: phone,

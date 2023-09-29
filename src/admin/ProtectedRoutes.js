@@ -1,12 +1,17 @@
-import { Navigate, Outlet } from "react-router-dom";
+
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+
 
 const useAuth = () =>{
-    const user = {loggedIn: true}
-    return user && user.loggedIn;
+
+  const bool = sessionStorage.getItem('user');
+  const user = bool?.toLowerCase() === 'true';
+    return user;
 }
 
 export default function ProtectedRoutes() {
+  const location = useLocation();
     const isAuth = useAuth();
 
-  return isAuth ? <Outlet /> : <Navigate to="/admin" />
+  return isAuth ? <Outlet /> : <Navigate replace state={{ from: location }} to="/admin" />
 }
