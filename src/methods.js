@@ -1,9 +1,4 @@
-import {
-
-  doc,
-  setDoc,
-  runTransaction,
-} from "@firebase/firestore";
+import { doc, setDoc, runTransaction } from "@firebase/firestore";
 import { auth, firestore } from "./firebaseConfig";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
@@ -30,21 +25,21 @@ export const AddDocument = async (data) => {
       transaction.update(sfDocRef, { population: newPopulation });
       const formattedPopulation = formatNumber(newPopulation);
       const newRef = doc(firestore, "List", formattedPopulation);
-      setDoc(newRef, data);
-
-         });
+      await setDoc(newRef, data);
+    });
     console.log("Transaction successfully committed!");
     return newPopulation;
-
   } catch (e) {
     console.log("Transaction failed: ", e);
     return null;
   }
 };
-export const setUpRecaptcha = (number) =>{
+export const setUpRecaptcha = (number) => {
   const recaptchaVerifier = new RecaptchaVerifier(
-    auth, 'recaptcha-container', {}
+    auth,
+    "recaptcha-container",
+    {}
   );
   recaptchaVerifier.render();
   return signInWithPhoneNumber(auth, number, recaptchaVerifier);
-}
+};
