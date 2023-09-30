@@ -33,6 +33,7 @@ export default function Scan() {
     if (scanResult) {
       handleOpen();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanResult]);
   const style = {
     position: "absolute",

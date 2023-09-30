@@ -15,13 +15,13 @@ export default function Home() {
   const [address, setAddress] = useState("");
   const [error, setError] = useState("");
   const [enterOTP, setEnterOTP] = useState(false);
-  const [OTPCode, setOTPCode] = useState("");
+  const [OTPCode, setOTPCode] = useState(""); //
   const [confirmObj, setConfirmObj] = useState("");
   const [otpError, setOtpError] = useState("");
   const [verifyLoader, setVerifyLoader] = useState(false);
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [addDoc, setAddDoc] = useState(false);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const [passNo, setPassNo] = useState('');
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -55,7 +55,7 @@ export default function Home() {
       setPassNo(code);
       handleOpen();
     } catch (err) {
-      setError(err);
+      setError(err.toString());
     } finally {
       setAddDoc(false);
     }
@@ -78,14 +78,21 @@ export default function Home() {
       setOtpError("Something went wrong please try again!");
     }
   };
-
-  const verifyOTP = async () => {
+  const handleOTPChange = (e) => {
+    const inputOTP = e.target.value;
+    setOTPCode(inputOTP);
+    if (inputOTP.length === 6) {
+      // Call the verifyotp function here
+      verifyOTP(inputOTP);
+    }
+  };
+  const verifyOTP = async (inputOTP) => {
     if (!confirmObj) {
       setOtpError("Invalid OTP confirmation object.");
       return;
     }
 
-    if (!OTPCode) {
+    if (!inputOTP) {
       setOtpError("Please enter OTP.");
       return;
     }
@@ -93,7 +100,7 @@ export default function Home() {
       setVerifyLoader(true);
       setOtpError("");
 
-      const result = await confirmObj.confirm(OTPCode);
+      const result = await confirmObj.confirm(inputOTP);
       if (result) {
         console.log(result);
         setOTPCode("");
@@ -199,7 +206,9 @@ export default function Home() {
                       type="number"
                       placeholder="Enter OTP Code"
                       required
-                      onChange={(e) => setOTPCode(e.target.value)}
+                      maxLength={6}
+                      value={OTPCode}
+                      onChange={handleOTPChange}
                     />
                   </div>
                   {verifyLoader ? (
@@ -210,7 +219,7 @@ export default function Home() {
                     <button
                       type="button"
                       className="send-otp"
-                      onClick={verifyOTP}
+                      onClick={() => verifyOTP(OTPCode)}
                     >
                       Verify Code
                     </button>
@@ -238,15 +247,15 @@ export default function Home() {
           <input type="radio" name="gender" id="dot-1"/>
           <input type="radio" name="gender" id="dot-2"/>
           <input type="radio" name="gender" id="dot-3"/>
-          <span className="gender-title">Gender</span>
+          <span className="gender-title">Age Group</span>
           <div className="category">
             <label for="dot-1">
             <span className="dot one"></span>
-            <span className="gender">Male</span>
+            <span className="gender">1-10</span>
           </label>
           <label for="dot-2">
             <span className="dot two"></span>
-            <span className="gender">Female</span>
+            <span className="gender">10-20</span>
           </label>
          
           </div>
