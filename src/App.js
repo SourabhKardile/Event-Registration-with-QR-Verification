@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from './admin/Dashboard';
 import ProtectedRoutes from './admin/ProtectedRoutes';
 import Login from './admin/Login';
+import Menu from './admin/Menu';
+import Scan from './admin/Scan';
 
 function App() {
 
@@ -15,6 +17,8 @@ function App() {
         
         <Route  path="/admin" element={<Login />} />
         <Route element={<ProtectedRoutes />}>
+        <Route path="/menu" element={<Menu />} /> 
+        <Route path="/scan" element={<Scan />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
         </Route>
        

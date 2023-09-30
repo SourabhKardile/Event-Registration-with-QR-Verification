@@ -7,7 +7,7 @@ export default function Login() {
   useEffect(()=>{
     const test = sessionStorage.getItem('user');
     if(test?.toLowerCase() === 'true'){
-      navigate("/dashboard", {replace: true});
+      navigate("/menu", {replace: true});
     }
   })
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ useEffect(()=>{
            if (location.state?.from) {
               navigate(location.state.from, {replace: true});
             }
-            navigate("/dashboard", {replace: true});
+            navigate("/menu", {replace: true});
       }
       
     } catch (error) {

@@ -1,4 +1,4 @@
-import { doc, setDoc, runTransaction } from "@firebase/firestore";
+import { doc, setDoc, runTransaction, updateDoc, getDoc } from "@firebase/firestore";
 import { auth, firestore } from "./firebaseConfig";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
@@ -43,3 +43,28 @@ export const setUpRecaptcha = (number) => {
   recaptchaVerifier.render();
   return signInWithPhoneNumber(auth, number, recaptchaVerifier);
 };
+
+export const ConfirmPass = async (id) => {
+  const data = formatNumber(id)
+
+  if (typeof id !== 'string' || id.trim() === '') {
+    console.log('Invalid document reference: ID is not a valid non-empty string.');
+    return;  // Exit early if the id is invalid
+  }
+  const DocRef = doc(firestore, "List", data);
+  try {
+    const docSnap = await getDoc(DocRef);
+    if (docSnap.exists()) {
+      await updateDoc(DocRef, { confirm: 1 });
+      return true;
+    } else {
+      return false;
+      // Handle the case where the document is not found.
+    }
+  } catch (error) {
+    // console.error('Error updating document:', error);
+    return false;
+    // Handle other errors that may occur during the update.
+  }
+ 
+}
