@@ -11,6 +11,7 @@ export default function Scan() {
   const [open, setOpen] = React.useState(false);
   const [scanResult, setScanResult] = useState("");
   const [success, setSuccess] = useState(false);
+  const [passNo, setPassNo] = useState('');
   useEffect(() => {
     const scanner = new Html5QrcodeScanner("reader", {
       qrbox: {
@@ -48,12 +49,24 @@ export default function Scan() {
   };
   const handleOpen = async () => {
    const data = await ConfirmPass(scanResult);
+   const [number] = scanResult.split(',');
+   console.log(data);
+   setPassNo(number);
    setSuccess(data);
     setOpen(true);
   };
   const handleClose = () => {
     navigate(0);
     setOpen(false);
+  };
+  const bgColor = () => {
+    if (success.ageGroup === 'adult') {
+      return 'purple';
+    } else if (success.ageGroup === 'children') {
+      return 'orange';
+    } else {
+      return '#ffffff';
+    }
   };
   return (
     <>
@@ -64,17 +77,16 @@ export default function Scan() {
         aria-labelledby="child-modal-title"
         aria-describedby="child-modal-description"
       >
-        <Box sx={{ ...style, width: 300 }}>
-          {success ? <><h3 align="center"> Pass Number</h3>
-          <h1 align="center">{scanResult}</h1></>: <><h1>Invalid QR </h1><h3>No Data Found</h3></>}
-          {/* <p>
-        Name: <b>{name}</b><br />
-        Phone: <b>{phone}</b><br />
-        Address:<b>{address}</b><br />
-
-      </p> */}
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button onClick={handleClose}>Done</Button>
+        <Box sx={{ ...style, width: 300, backgroundColor: bgColor() }}>
+          {success ? 
+          <><h3 align="center"> Pass Number</h3>
+          <h1 align="center">{passNo}</h1>
+          <h4 style={{fontWeight:'normal'}}>Name: <span style={{textTransform:'capitalize', fontWeight:'bold'}}>{success.firstName} {success.middleName} {success.surname}</span></h4>
+         
+          <h4 style={{fontWeight:'normal'}}>Age Group: <span style={{textTransform:'capitalize', fontWeight:'bold'}}>{success.ageGroup}</span></h4>
+          </>: <><h1>Invalid QR </h1><h3>No Data Found</h3></>}
+          <div style={{ display: "flex", justifyContent: "center", marginTop:20 }}>
+            <Button onClick={handleClose} variant="contained">Done</Button>
           </div>
         </Box>
       </Modal>

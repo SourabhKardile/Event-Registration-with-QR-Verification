@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./home.css";
-import { AddDocument, setUpRecaptcha } from "./methods";
+import { AddDocumentAdult, AddDocumentChild, setUpRecaptcha } from "./methods";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -81,10 +81,10 @@ export default function Home() {
         setError("Enter Middle Name")
       }
 
-      // if (!phoneVerified) {
-      //   setError("Phone number not verified");
-      //   return;
-      // }
+      if (!phoneVerified) {
+        setError("Phone number not verified");
+        return;
+      }
       if(!sector){
         setError("Please enter Sector no.");
         return;
@@ -122,17 +122,31 @@ export default function Home() {
       // console.log("age " + ageGrp);
       // console.log("email " + email);
       // console.log("customSector: " + customSector);
-      // const data = {
-      //   surname: surname,
-      //   firstName: firstName,
-      //   middleName: middleName,
-      //   colony: colony,
-      //   sector: sector,
-      //   confirm: 0,
-      // };
-      // const code = await AddDocument(data);
-      // setPassNo(code);
-      // handleOpen();
+
+      const data = {
+        surname: surname,
+        firstName: firstName,
+        middleName: middleName,
+        colony: colony,
+        sector: sector,
+        plot: plot,
+        flat: flat,
+        dob: dob,
+        ageGroup:ageGrp,
+        email: email,
+        phone: phone,
+        customSector: customSector,
+        confirm: 0,
+      };
+      let code='';
+      if(ageGrp==='children'){
+        code = await AddDocumentChild(data);
+      }else{
+        code = await AddDocumentAdult(data);
+      }
+      
+      setPassNo(code);
+      handleOpen();
     } catch (err) {
       setError(err.toString());
     } finally {
@@ -213,13 +227,53 @@ export default function Home() {
 
   const generateQR = async () => {
     const qr = QRCode(0, "H");
-    qr.addData(`${passNo}`);
+    qr.addData(`${passNo},${ageGrp}`);
     qr.make();
 
     const qrCodeUrl = qr.createDataURL(10, 10);
 
-    const doc = new jsPDF();
-    doc.addImage(qrCodeUrl, "PNG", 10, 10, 100, 100);
+    const pdfWidth = 210;  // A4 width in mm
+  const pdfHeight = 297; // A4 height in mm
+
+  // Adjust the QR code width and height as needed
+  const qrWidth = 80;
+  const qrHeight = 80;
+
+  // Horizontal centering for the QR code and text
+  const qrXPos = (pdfWidth - qrWidth) / 2;
+
+  const doc = new jsPDF();
+  if(ageGrp === 'adult'){
+    doc.setFillColor(228, 12, 243);
+  }else{
+    doc.setFillColor(243, 97, 29);
+  }
+  
+  doc.rect(0, 0, pdfWidth, pdfHeight, 'F');
+  // Set font size for the text to 12
+  doc.setFontSize(12);
+
+  // Add the text at the top (horizontally centered)
+  const textTop = "Show this QR code to get the pass";
+  const textTopWidth = doc.getStringUnitWidth(textTop) * doc.internal.getFontSize();
+  const textTopXPos = (pdfWidth - textTopWidth) / 2;
+  doc.text(textTop, textTopXPos, 10);
+
+  // Set font size for the QR code text to 12 (you can adjust this as needed)
+  doc.setFontSize(12);
+
+  // Add the QR code horizontally centered
+  doc.addImage(qrCodeUrl, "PNG", qrXPos, 40, qrWidth, qrHeight);
+
+  // Add the text below the QR code
+  const textBelowQR = [
+    `Pass Number: ${passNo}`,
+    `Name: ${firstName} `,
+    `Phone: ${phone}`,
+    `Age Group: ${ageGrp}`
+  ];
+  const textBelowQRYPos = 40 + qrHeight + 10; // Adjust vertical position as needed
+  doc.text(textBelowQR, 10, textBelowQRYPos);
     doc.save("sample.pdf");
   };
   return (

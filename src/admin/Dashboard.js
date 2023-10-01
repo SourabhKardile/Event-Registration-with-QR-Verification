@@ -2,23 +2,23 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { useLocation } from "react-router-dom";
 
 export default function Dashboard() {
+  const location = useLocation();
+  const ageGrp = location.state && location.state.ageGrp;
   const [userData, setUserData] = useState([]);
+
   const fetchData = async () => {
     try {
-      const querySnapshot = await getDocs(collection(firestore, "List"));
-      const newData = [];
-      querySnapshot.forEach((doc) => {
-        const data = {
-          id: parseInt(doc.id),
-          name: doc.data().name,
-          phone: doc.data().phone,
-          address: doc.data().address,
-          confirm: doc.data().confirm
-        };
-        newData.push(data);
-      });
+      let collectionName = ageGrp === 'child' ? 'Children' : 'Adult';
+      const querySnapshot = await getDocs(collection(firestore, collectionName));
+
+      const newData = querySnapshot.docs.map((doc) => ({
+        id: parseInt(doc.id),
+        ...doc.data(),
+      }));
+
       setUserData(newData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -26,10 +26,10 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchData(); // Call the asynchronous function here
-  }, []); // Empty dependency array to run this effect only once
+    fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ageGrp]);
 
-  
   //MUI
 
   const columns = [
@@ -89,12 +89,20 @@ export default function Dashboard() {
         },
       },
     { field: "id", headerName: "Pass", width: 130 },
-    { field: "name", headerName: "Full Name", width: 250 },
-    { field: "phone", headerName: "Phone Number", width: 170 },
+    { field: "firstName", headerName: "First Name", width: 130 },
+    { field: "middleName", headerName: "Middle Name", width: 130 },
+    { field: "surname", headerName: "Last Name", width: 130 },
+    { field: "phone", headerName: "Phone Number", width: 130 },
+    { field: "dob", headerName: "Date of Birth", width: 130 },
+    { field: "email", headerName: "Email", width: 200 },
     {
-      field: "address",
-      headerName: "Address",
-      width: 500,
+      field: 'combinedField',
+      headerName: 'Address',
+      width: 300,
+      renderCell: (params) => {
+        const { sector, colony, plot, flat } = params.row;
+        return `${sector} ${colony} ${plot} ${flat}`;
+      },
     },
   ];
   const rows = userData;

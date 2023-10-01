@@ -11,8 +11,8 @@ const formatNumber = (number) => {
     return `${number}`;
   }
 };
-export const AddDocument = async (data) => {
-  const sfDocRef = doc(firestore, "List", "counterId");
+export const AddDocumentChild = async (data) => {
+  const sfDocRef = doc(firestore, "Children", "counterId");
   let newPopulation = null;
   try {
     await runTransaction(firestore, async (transaction) => {
@@ -24,7 +24,30 @@ export const AddDocument = async (data) => {
       newPopulation = sfDoc.data().population + 1;
       transaction.update(sfDocRef, { population: newPopulation });
       const formattedPopulation = formatNumber(newPopulation);
-      const newRef = doc(firestore, "List", formattedPopulation);
+      const newRef = doc(firestore, "Children", formattedPopulation);
+      await setDoc(newRef, data);
+    });
+    console.log("Transaction successfully committed!");
+    return newPopulation;
+  } catch (e) {
+    console.log("Transaction failed: ", e);
+    return null;
+  }
+};
+export const AddDocumentAdult = async (data) => {
+  const sfDocRef = doc(firestore, "Adult", "counterId");
+  let newPopulation = null;
+  try {
+    await runTransaction(firestore, async (transaction) => {
+      const sfDoc = await transaction.get(sfDocRef);
+      if (!sfDoc.exists()) {
+        // eslint-disable-next-line no-throw-literal
+        throw "Document does not exist!";
+      }
+      newPopulation = sfDoc.data().population + 1;
+      transaction.update(sfDocRef, { population: newPopulation });
+      const formattedPopulation = formatNumber(newPopulation);
+      const newRef = doc(firestore, "Adult", formattedPopulation);
       await setDoc(newRef, data);
     });
     console.log("Transaction successfully committed!");
@@ -45,26 +68,33 @@ export const setUpRecaptcha = (number) => {
 };
 
 export const ConfirmPass = async (id) => {
-  const data = formatNumber(id)
+  const [passNo, ageGrp] = id.split(',');
+  const data = formatNumber(passNo);
 
-  if (typeof id !== 'string' || id.trim() === '') {
-    console.log('Invalid document reference: ID is not a valid non-empty string.');
-    return;  // Exit early if the id is invalid
-  }
-  const DocRef = doc(firestore, "List", data);
+  let collectionName;
+if (ageGrp === 'adult') {
+  collectionName = 'Adult';
+} else if (ageGrp === 'children') {
+  collectionName = 'Children';
+} else {
+
+  return false;
+}
+  const DocRef = doc(firestore, collectionName, data);
+
   try {
     const docSnap = await getDoc(DocRef);
+
     if (docSnap.exists()) {
       await updateDoc(DocRef, { confirm: 1 });
-      return true;
+      return docSnap.data();
     } else {
       return false;
       // Handle the case where the document is not found.
     }
   } catch (error) {
-    // console.error('Error updating document:', error);
+    console.error('Error updating document:', error);
     return false;
     // Handle other errors that may occur during the update.
   }
- 
-}
+};
