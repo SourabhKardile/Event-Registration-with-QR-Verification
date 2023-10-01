@@ -1,18 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./home.css";
 import { AddDocument, setUpRecaptcha } from "./methods";
 import { useNavigate } from "react-router-dom";
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Button from '@mui/material/Button';
-import QRCode from 'qrcode-generator';
-import jsPDF from 'jspdf';
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Button from "@mui/material/Button";
+import QRCode from "qrcode-generator";
+import jsPDF from "jspdf";
 
 export default function Home() {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [colony, setColony] = useState("");
+  const [sector, setSector] = useState("1");
+  const [customSector, setCustomSector] = useState("");
+  const [plot, setPlot] = useState("");
+  const [dob, setDob] = useState("");
+  const [ageGrp, setAgeGrp] = useState("");
+  const [email, setEmail] = useState("");
+  const [flat, setFlat] = useState("");
+
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
   const [error, setError] = useState("");
   const [enterOTP, setEnterOTP] = useState(false);
   const [OTPCode, setOTPCode] = useState(""); //
@@ -22,38 +32,107 @@ export default function Home() {
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [addDoc, setAddDoc] = useState(false);
   const [open, setOpen] = useState(false);
-  const [passNo, setPassNo] = useState('');
+  const [passNo, setPassNo] = useState("");
+  useEffect(()=>{
+    handleAgeChange();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[dob]);
+
+  const handleSelectChange = (event) => {
+    const value = event.target.value;
+    setSector(value);
+  };
+  const handleAgeChange = () => {
+    const ageGroup = calculateAgeGroup(dob);
+    setAgeGrp(ageGroup);
+  };
+  const calculateAgeGroup = (dob) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const hasBirthdayOccurredThisYear =
+    today.getMonth() > birthDate.getMonth() ||
+    (today.getMonth() === birthDate.getMonth() &&
+      today.getDate() >= birthDate.getDate());
+
+      if (age <= 14 || (age === 15 && !hasBirthdayOccurredThisYear)) {
+        return 'children';
+      } else if(isNaN(age)){
+        return '';
+      }else{
+        return 'adult';
+      }
+    };
+  
+  
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
+      
       setAddDoc(true);
-      if (!phoneVerified) {
-        setError("Phone number not verified");
-        return;
+      if(!surname){
+        setError("Enter Surname")
       }
-      if (!address) {
-        setError("Please enter Address.");
-        return;
-      } else {
-        setError("");
+      if(!firstName){
+        setError("Enter First Name")
       }
-      const nameWords = name.split(" ");
-      if (nameWords.length < 2) {
-        setError("Please enter your full name.");
-        return;
-      } else {
-        setError("");
+      if(!middleName){
+        setError("Enter Middle Name")
       }
 
-      const data = {
-        name: name,
-        phone: phone,
-        address: address,
-        confirm: 0,
-      };
-      const code = await AddDocument(data);
-      setPassNo(code);
-      handleOpen();
+      // if (!phoneVerified) {
+      //   setError("Phone number not verified");
+      //   return;
+      // }
+      if(!sector){
+        setError("Please enter Sector no.");
+        return;
+      }
+      if(!plot && !flat){
+        setError("Please enter Plot or Flat no.");
+        return;
+      }
+      if(!dob){
+        setError("Please enter Date of Birth");
+        return;
+      }
+      if(!ageGrp){
+        setError("Please select Age Group");
+        return;
+      }
+      if(!customSector && sector ==='custom'){
+        setError("Please enter Sector/Others");
+        return;
+      }
+      if (!colony) {
+        setError("Please enter Colony/ Society Name.");
+        return;
+      } else {
+        setError("");
+      }
+      // console.log("Surname " + surname);
+      // console.log("First Name " + firstName);
+      // console.log("Midlde Name " + middleName);
+      // console.log("colony " + colony);
+      // console.log("sector " + sector);
+      // console.log("plot  " + plot);
+      // console.log("flat " + flat);
+      // console.log("dob " + dob);
+      // console.log("age " + ageGrp);
+      // console.log("email " + email);
+      // console.log("customSector: " + customSector);
+      // const data = {
+      //   surname: surname,
+      //   firstName: firstName,
+      //   middleName: middleName,
+      //   colony: colony,
+      //   sector: sector,
+      //   confirm: 0,
+      // };
+      // const code = await AddDocument(data);
+      // setPassNo(code);
+      // handleOpen();
     } catch (err) {
       setError(err.toString());
     } finally {
@@ -115,48 +194,54 @@ export default function Home() {
     }
   };
   const handleOpen = () => setOpen(true);
-  const handleClose = async() => {await generateQR();setOpen(false); navigate(0)};
+  const handleClose = async () => {
+    await generateQR();
+    setOpen(false);
+    navigate(0);
+  };
   const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
+    bgcolor: "background.paper",
+    border: "2px solid #000",
     boxShadow: 24,
     p: 4,
   };
 
-  const generateQR = async() => {
-    const qr = QRCode(0, 'H');
+  const generateQR = async () => {
+    const qr = QRCode(0, "H");
     qr.addData(`${passNo}`);
     qr.make();
-  
+
     const qrCodeUrl = qr.createDataURL(10, 10);
-  
+
     const doc = new jsPDF();
-    doc.addImage(qrCodeUrl, 'PNG', 10, 10, 100, 100);
-    doc.save('sample.pdf');
-  }
+    doc.addImage(qrCodeUrl, "PNG", 10, 10, 100, 100);
+    doc.save("sample.pdf");
+  };
   return (
     <div className="main">
-    <Modal
+      <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="child-modal-title"
         aria-describedby="child-modal-description"
       >
-        <Box sx={{ ...style, width: 300 }}>
-        <h3 align="center">Your Pass Number is: </h3>
+        <Box sx={{ ...style, width: 400 }}>
+          <h3 align="center">Your Pass Number is: </h3>
           <h1 align="center">{passNo}</h1>
           <p>
-            Name: <b>{name}</b><br />
-            Phone: <b>{phone}</b><br />
-            Address:<b>{address}</b><br />
-
+            Full Name: <b>{firstName} {middleName} {surname}</b>
+            <br />
+            Phone: <b>{phone}</b>
+            <br />
+            <br />
           </p>
-          <Button onClick={handleClose}>Download QRCode</Button>
+          <div style={{textAlign:'center'}}> <Button onClick={handleClose} variant="contained">Download QRCode</Button></div>
+         
         </Box>
       </Modal>
       <div className="container">
@@ -164,15 +249,141 @@ export default function Home() {
         <div className="content">
           <form onSubmit={handleSubmit}>
             <div className="user-details">
-              <div className="input-box">
-                <span className="details">Full Name</span>
+              <div className="input-box name">
+                <span className="details">Surname</span>
                 <input
                   type="text"
-                  placeholder="Enter your name"
+                  placeholder="Enter Surname"
                   required
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setSurname(e.target.value)}
                 />
               </div>
+              <div className="input-box name">
+                <span className="details">Husband/Father Name</span>
+                <input
+                  type="text"
+                  placeholder="Enter Middle Name"
+                  required
+                  onChange={(e) => setMiddleName(e.target.value)}
+                />
+              </div>
+              <div className="input-box name">
+                <span className="details">First Name</span>
+                <input
+                  type="text"
+                  placeholder="Enter First Name"
+                  required
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+              <div className="input-box address">
+                <span className="details">Address:</span>
+                <span className="details" style={{ fontSize: 14 }}>
+                  Colony/Society name
+                </span>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Colony/Society name"
+                  onChange={(e) => setColony(e.target.value)}
+                />
+              </div>
+              <div className="input-box address">
+                <span className="Noneed details" style={{ color: "#ffffff" }}>
+                  &
+                </span>
+                <span className="details" style={{ fontSize: 14 }}>
+                  Sector No. / Others
+                </span>
+                {sector === "custom" ? (
+                  <input
+                    type="text"
+                    placeholder="Others"
+                    onChange={(e) => setCustomSector(e.target.value)}
+                  />
+                ) : (
+                  <div className="custom-dropdown">
+                    <select value={sector} onChange={handleSelectChange}>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                      <option value="11">11</option>
+                      <option value="12">12</option>
+                      <option value="13">13</option>
+                      <option value="custom">Others</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+              <div className="input-box optional">
+                
+                <span className="details" style={{ fontSize: 14 }}>
+                  Plot No.<small style={{fontWeight:'normal'}}> (if applicable)</small>
+                </span>
+                <input
+                  type="text"
+                  placeholder="Enter Plot No."
+                  onChange={(e) => setPlot(e.target.value)}
+                />
+              </div>
+              <div style={{marginTop:30, fontWeight:'normal'}} > 
+                <span className="details">
+                  OR
+                </span></div>
+              <div className="input-box optional">
+                
+                <span className="details" style={{ fontSize: 14 }}>
+                  Flat & Wing<small style={{fontWeight:'normal'}}> (if applicable)</small>
+                </span>
+                <input
+                  type="text"
+                  placeholder="Enter Flat & Wing"
+                  onChange={(e) => setFlat(e.target.value)}
+                />
+              </div>
+              <div className="input-box date">
+                <span className="details">DOB</span>
+                <input
+                  type="date"
+                  required
+                  onChange={(e) => {
+                    setDob(e.target.value);
+                    }
+                  }
+                />
+              </div>
+              <div className="input-box age">
+          <input type="radio" name="age" id="children"  onChange={handleAgeChange}  checked={ageGrp === 'children'} />
+          <input type="radio" name="age" id="adult" onChange={handleAgeChange} checked={ageGrp === 'adult'} />
+          <span className="details" style={{fontWeight:'500'}}>Age Group</span>
+          <div className="category">
+            <label htmlFor="children">
+            <span className="dot one"></span>
+            <span className="gender">1-14</span>
+          </label>
+          <label htmlFor="adult">
+            <span className="dot two"></span>
+            <span className="gender">15 and Above</span>
+          </label>
+         
+          </div>
+        </div>
+        <div className="input-box">
+                <span className="details">Email Address <small style={{fontWeight:'normal'}}> (optional)</small></span>
+                <input
+                  type="email"
+                  placeholder="Enter Email"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
               <div className="input-box input-box-phone">
                 <span className="details">Phone Number</span>
                 <input
@@ -233,33 +444,9 @@ export default function Home() {
                   {otpError}
                 </div>
               )}
-
-              <div className="input-box address">
-                <span className="details">Address</span>
-                <input
-                  type="text"
-                  placeholder="Enter your Address"
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-              </div>
             </div>
-            {/* <div className="gender-details">
-          <input type="radio" name="gender" id="dot-1"/>
-          <input type="radio" name="gender" id="dot-2"/>
-          <input type="radio" name="gender" id="dot-3"/>
-          <span className="gender-title">Age Group</span>
-          <div className="category">
-            <label for="dot-1">
-            <span className="dot one"></span>
-            <span className="gender">1-10</span>
-          </label>
-          <label for="dot-2">
-            <span className="dot two"></span>
-            <span className="gender">10-20</span>
-          </label>
-         
-          </div>
-        </div> */}
+
+            
             {error && (
               <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
             )}

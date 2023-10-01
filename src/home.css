@@ -15,6 +15,7 @@
 .container{
   max-width: 700px;
   width: 100%;
+  margin-top:200px;
   background-color: #fff;
   padding: 25px 30px;
   border-radius: 5px;
@@ -45,9 +46,29 @@ form .user-details .input-box{
   margin-bottom: 15px;
   width: 100% ;
 }
+form .user-details .name{
+  margin-bottom: 15px;
+  width: 33% ;
+}
+form .user-details .date{
+  margin-bottom: 15px;
+  width: 49% ;
+}
+form .user-details .age{
+  margin-bottom: 15px;
+  width: 45% ;
+}
 form .user-details .input-box-phone{
   margin-bottom: 15px;
   width: 80% ;
+}
+form .user-details .address{
+  margin-bottom: 15px;
+  width: 49% ;
+}
+form .user-details .optional{
+  margin-bottom: 15px;
+  width: 45% ;
 }
 /* send otp */
 .send-otp{
@@ -118,9 +139,8 @@ form .input-box span.details{
   border: 5px solid transparent;
   transition: all 0.3s ease;
 }
- #dot-1:checked ~ .category label .one,
- #dot-2:checked ~ .category label .two,
- #dot-3:checked ~ .category label .three{
+ #children:checked ~ .category label .one,
+ #adult:checked ~ .category label .two{
    background: #9b59b6;
    border-color: #d9d9d9;
  }
@@ -168,6 +188,12 @@ form .input-box span.details{
   }
 
  @media(max-width: 584px){
+  .container {
+    margin-top: 50px;
+  }
+   .Noneed {
+    display: none !important;
+  }
  .container{
   max-width: 100%;
 }
@@ -202,4 +228,37 @@ form .user-details .input-box{
   .container .content .category{
     flex-direction: column;
   }
+}
+
+
+/* dropdown */
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.custom-dropdown select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.custom-dropdown select:focus {
+  border-color: #9b59b6;
+}
+
+
+
+/* Style the options */
+.custom-dropdown select option {
+  background-color: #fff;
+}
+
+.custom-dropdown select option:hover {
+  background-color: #f0f0f0;
 }
