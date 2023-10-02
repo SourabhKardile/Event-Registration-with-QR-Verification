@@ -168,7 +168,7 @@ export default function Home() {
         setEnterOTP(true);
       }
     } catch (e) {
-      setOtpError("Something went wrong please try again!");
+      setOtpError("+Something went wrong please try again!"+ e);
     }
   };
   const handleOTPChange = (e) => {
