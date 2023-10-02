@@ -70,7 +70,7 @@ export default function Scan() {
   };
   return (
     <>
-    <div style={{display:'flex', justifyContent:'center', marginTop:10}}><button onClick={()=>{navigate('/menu')}}>Menu</button></div>
+    <div style={{display:'flex', justifyContent:'center', marginTop:10}}><Button onClick={()=>{navigate('/menu')}} variant="contained" color="success" style={{margin:20}}>Back</Button></div>
       <Modal
         open={open}
         onClose={handleClose}

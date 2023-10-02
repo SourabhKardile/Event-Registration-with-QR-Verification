@@ -3,8 +3,11 @@ import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from 'react-router';
+import Button from "@mui/material/Button";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const location = useLocation();
   const ageGrp = location.state && location.state.ageGrp;
   const [userData, setUserData] = useState([]);
@@ -108,7 +111,11 @@ export default function Dashboard() {
   const rows = userData;
 
   return (
+    <div>
+    <div><Button onClick={()=>{navigate('/menu')}} variant="contained" color="success" style={{margin:20}}>Back</Button>
+</div>
     <div style={{ marginTop: 70 }}>
+    
       <div style={{ width: "90%", margin: "0 auto ", overflow: "auto" }}>
         <DataGrid
           rows={rows}
@@ -122,6 +129,7 @@ export default function Dashboard() {
           slots={{ toolbar: GridToolbar }}
         />
       </div>
+    </div>
     </div>
   );
 }

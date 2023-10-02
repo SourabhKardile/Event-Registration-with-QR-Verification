@@ -251,33 +251,34 @@ export default function Home() {
   
   doc.rect(0, 0, pdfWidth, pdfHeight, 'F');
   // Set font size for the text to 12
-  doc.setFontSize(12);
+  doc.setFontSize(18);
 
   // Add the text at the top (horizontally centered)
-  const textTop = "Show this QR code to get the pass";
+  const textTop = "Show this QR code to get the Pass";
   const textTopWidth = doc.getStringUnitWidth(textTop) * doc.internal.getFontSize();
-  const textTopXPos = (pdfWidth - textTopWidth) / 2;
+  const textTopXPos = (pdfWidth - textTopWidth) +120;
   doc.text(textTop, textTopXPos, 10);
 
   // Set font size for the QR code text to 12 (you can adjust this as needed)
-  doc.setFontSize(12);
+  doc.setFontSize(16);
 
   // Add the QR code horizontally centered
   doc.addImage(qrCodeUrl, "PNG", qrXPos, 40, qrWidth, qrHeight);
 
   // Add the text below the QR code
   const textBelowQR = [
-    `Pass Number: ${passNo}`,
-    `Name: ${firstName} `,
-    `Phone: ${phone}`,
-    `Age Group: ${ageGrp}`
+    `Pass Number: ${passNo} 302`,
+    `Name: ${firstName} ${middleName} ${surname} Abhishek Vilas Madigire`,
+    `Phone: ${phone} 9878678987`,
+    `Age Group: ${ageGrp} Adult`
   ];
-  const textBelowQRYPos = 40 + qrHeight + 10; // Adjust vertical position as needed
+  const textBelowQRYPos = 40 + qrHeight + 20; // Adjust vertical position as needed
   doc.text(textBelowQR, 10, textBelowQRYPos);
-    doc.save("sample.pdf");
+    doc.save(`shrisaichowkmitramandal${passNo}.pdf`);
   };
   return (
     <div className="main">
+    <div><button onClick={()=>{generateQR()}}>Hello</button></div>
       <Modal
         open={open}
         onClose={handleClose}
