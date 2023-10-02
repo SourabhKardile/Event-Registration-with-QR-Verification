@@ -111,17 +111,6 @@ export default function Home() {
       } else {
         setError("");
       }
-      // console.log("Surname " + surname);
-      // console.log("First Name " + firstName);
-      // console.log("Midlde Name " + middleName);
-      // console.log("colony " + colony);
-      // console.log("sector " + sector);
-      // console.log("plot  " + plot);
-      // console.log("flat " + flat);
-      // console.log("dob " + dob);
-      // console.log("age " + ageGrp);
-      // console.log("email " + email);
-      // console.log("customSector: " + customSector);
 
       const data = {
         surname: surname,
@@ -195,13 +184,11 @@ export default function Home() {
 
       const result = await confirmObj.confirm(inputOTP);
       if (result) {
-        console.log(result);
         setOTPCode("");
         setPhoneVerified(true);
         setEnterOTP(false);
       }
     } catch (e) {
-      console.log(e);
       setOtpError("Invalid OTP");
     } finally {
       setVerifyLoader(false);
@@ -236,11 +223,10 @@ export default function Home() {
   const pdfHeight = 297; // A4 height in mm
 
   // Adjust the QR code width and height as needed
-  const qrWidth = 80;
-  const qrHeight = 80;
+  const qrWidth = 124;
+  const qrHeight = 124;
 
   // Horizontal centering for the QR code and text
-  const qrXPos = (pdfWidth - qrWidth) / 2;
 
   const doc = new jsPDF();
   if(ageGrp === 'adult'){
@@ -251,34 +237,37 @@ export default function Home() {
   
   doc.rect(0, 0, pdfWidth, pdfHeight, 'F');
   // Set font size for the text to 12
-  doc.setFontSize(18);
-
+  doc.setFontSize(40);
+  doc.setFont("helvetica", "bold");
   // Add the text at the top (horizontally centered)
-  const textTop = "Show this QR code to get the Pass";
-  const textTopWidth = doc.getStringUnitWidth(textTop) * doc.internal.getFontSize();
-  const textTopXPos = (pdfWidth - textTopWidth) +120;
-  doc.text(textTop, textTopXPos, 10);
+  const textTop = "Show this QR code";
+  const textTopXPos = 41;
+  doc.setTextColor(255, 255, 255);
+  doc.text(textTop, textTopXPos, 22);
+  doc.text("to get the Pass", 55,37);
 
-  // Set font size for the QR code text to 12 (you can adjust this as needed)
-  doc.setFontSize(16);
+  doc.setFontSize(25);
 
   // Add the QR code horizontally centered
-  doc.addImage(qrCodeUrl, "PNG", qrXPos, 40, qrWidth, qrHeight);
+  doc.addImage(qrCodeUrl, "PNG", 43, 60, qrWidth, qrHeight);
 
   // Add the text below the QR code
   const textBelowQR = [
-    `Pass Number: ${passNo} 302`,
-    `Name: ${firstName} ${middleName} ${surname} Abhishek Vilas Madigire`,
-    `Phone: ${phone} 9878678987`,
-    `Age Group: ${ageGrp} Adult`
+    `Pass Number: ${passNo}`,
+    `Name: ${firstName} ${middleName} ${surname}`,
+    `Phone: ${phone}`,
+    `Age Group: ${ageGrp}`
   ];
-  const textBelowQRYPos = 40 + qrHeight + 20; // Adjust vertical position as needed
-  doc.text(textBelowQR, 10, textBelowQRYPos);
+  const lineHeight = 20;
+  const textBelowQRYPos = 210;  // Starting Y position
+textBelowQR.forEach((line, index) => {
+  const yPos = textBelowQRYPos + index * lineHeight;
+  doc.text(line, 10, yPos);
+});
     doc.save(`shrisaichowkmitramandal${passNo}.pdf`);
   };
   return (
     <div className="main">
-    <div><button onClick={()=>{generateQR()}}>Hello</button></div>
       <Modal
         open={open}
         onClose={handleClose}
@@ -313,15 +302,7 @@ export default function Home() {
                   onChange={(e) => setSurname(e.target.value)}
                 />
               </div>
-              <div className="input-box name">
-                <span className="details">Husband/Father Name</span>
-                <input
-                  type="text"
-                  placeholder="Enter Middle Name"
-                  required
-                  onChange={(e) => setMiddleName(e.target.value)}
-                />
-              </div>
+              
               <div className="input-box name">
                 <span className="details">First Name</span>
                 <input
@@ -329,6 +310,15 @@ export default function Home() {
                   placeholder="Enter First Name"
                   required
                   onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+              <div className="input-box name">
+                <span className="details">Husband/Father Name</span>
+                <input
+                  type="text"
+                  placeholder="Enter Middle Name"
+                  required
+                  onChange={(e) => setMiddleName(e.target.value)}
                 />
               </div>
               <div className="input-box address">
@@ -363,14 +353,11 @@ export default function Home() {
                       <option value="2">2</option>
                       <option value="3">3</option>
                       <option value="4">4</option>
-                      <option value="5">5</option>
                       <option value="6">6</option>
                       <option value="7">7</option>
-                      <option value="8">8</option>
                       <option value="9">9</option>
                       <option value="10">10</option>
                       <option value="11">11</option>
-                      <option value="12">12</option>
                       <option value="13">13</option>
                       <option value="custom">Others</option>
                     </select>
@@ -403,42 +390,6 @@ export default function Home() {
                   onChange={(e) => setFlat(e.target.value)}
                 />
               </div>
-              <div className="input-box date">
-                <span className="details">DOB</span>
-                <input
-                  type="date"
-                  required
-                  onChange={(e) => {
-                    setDob(e.target.value);
-                    }
-                  }
-                />
-              </div>
-              <div className="input-box age">
-          <input type="radio" name="age" id="children"  onChange={handleAgeChange}  checked={ageGrp === 'children'} />
-          <input type="radio" name="age" id="adult" onChange={handleAgeChange} checked={ageGrp === 'adult'} />
-          <span className="details" style={{fontWeight:'500'}}>Age Group</span>
-          <div className="category">
-            <label htmlFor="children">
-            <span className="dot one"></span>
-            <span className="gender">1-14</span>
-          </label>
-          <label htmlFor="adult">
-            <span className="dot two"></span>
-            <span className="gender">15 and Above</span>
-          </label>
-         
-          </div>
-        </div>
-        <div className="input-box">
-                <span className="details">Email Address <small style={{fontWeight:'normal'}}> (optional)</small></span>
-                <input
-                  type="email"
-                  placeholder="Enter Email"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-
               <div className="input-box input-box-phone">
                 <span className="details">Phone Number</span>
                 <input
@@ -499,6 +450,44 @@ export default function Home() {
                   {otpError}
                 </div>
               )}
+              <div className="input-box">
+                <span className="details">Email Address <small style={{fontWeight:'normal'}}> (optional)</small></span>
+                <input
+                  type="email"
+                  placeholder="Enter Email"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="input-box date">
+                <span className="details">DOB</span>
+                <input
+                  type="date"
+                  required
+                  onChange={(e) => {
+                    setDob(e.target.value);
+                    }
+                  }
+                />
+              </div>
+              <div className="input-box age">
+          <input type="radio" name="age" id="children"  onChange={handleAgeChange}  checked={ageGrp === 'children'} />
+          <input type="radio" name="age" id="adult" onChange={handleAgeChange} checked={ageGrp === 'adult'} />
+          <span className="details" style={{fontWeight:'500'}}>Age Group</span>
+          <div className="category">
+            <label htmlFor="children">
+            <span className="dot one"></span>
+            <span className="gender">1-14</span>
+          </label>
+          <label htmlFor="adult">
+            <span className="dot two"></span>
+            <span className="gender">15 and Above</span>
+          </label>
+         
+          </div>
+        </div>
+        
+
+             
             </div>
 
             
