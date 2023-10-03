@@ -6,6 +6,7 @@ import ProtectedRoutes from './admin/ProtectedRoutes';
 import Login from './admin/Login';
 import Menu from './admin/Menu';
 import Scan from './admin/Scan';
+import Landing from './Landing';
 
 function App() {
 
@@ -13,8 +14,8 @@ function App() {
     <BrowserRouter>
     
       <Routes>
-        <Route path="/" element={<Home />} />
-        
+        <Route path="/" element={<Landing />} />
+        <Route path="/register" element={<Home />} />
         <Route  path="/admin" element={<Login />} />
         <Route element={<ProtectedRoutes />}>
         <Route path="/menu" element={<Menu />} /> 
