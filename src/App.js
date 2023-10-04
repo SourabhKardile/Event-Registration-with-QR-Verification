@@ -9,7 +9,6 @@ import Scan from './admin/Scan';
 import Landing from './Landing';
 
 function App() {
-
   return (
     <BrowserRouter>
     
