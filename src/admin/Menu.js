@@ -14,6 +14,7 @@ export default function Menu() {
 
     <Button onClick={() => handleNavigate('child')} variant="contained" color="success" style={{width:'50%', marginTop:50, height:50}}>Dashboard Children</Button>
     <Button onClick={() => handleNavigate('adult')} variant="contained" color="success" style={{width:'50%', marginTop:50, height:50}}>Dashboard Adult</Button>
+    <Button onClick={()=>{navigate('/adminreg')}} variant="contained" color="success" style={{width:'50%', marginTop:50, height:50}}>Admin Register</Button>
 
     </div>
   )

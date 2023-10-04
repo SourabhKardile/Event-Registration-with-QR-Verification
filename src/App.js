@@ -7,6 +7,7 @@ import Login from './admin/Login';
 import Menu from './admin/Menu';
 import Scan from './admin/Scan';
 import Landing from './Landing';
+import AdminRegister from './admin/AdminRegister';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/register" element={<Home />} />
         <Route  path="/admin" element={<Login />} />
         <Route element={<ProtectedRoutes />}>
+        <Route path="/adminreg" element={<AdminRegister />} /> 
         <Route path="/menu" element={<Menu />} /> 
         <Route path="/scan" element={<Scan />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
