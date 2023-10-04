@@ -4,13 +4,20 @@ import { firestore } from "../firebaseConfig";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router';
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import { ConfirmPass } from "../methods";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [open, setOpen] = useState(false);
   const ageGrp = location.state && location.state.ageGrp;
   const [userData, setUserData] = useState([]);
+  const [pass, setPass] = useState('');
+  const [age, setAge] = useState('');
+  const [name, setName] = useState('');
 
   const fetchData = async () => {
     try {
@@ -83,7 +90,12 @@ export default function Dashboard() {
             >
               <i style={{fontSize:25}}
                 onClick={() => {
-                  console.log(params.value);
+                  setAge(params.row.ageGroup)
+                  setPass(params.id);
+                  const name = `${params.row.firstName} ${params.row.middleName} ${params.row.surname}`
+                 setName(name)
+                  handleOpen();
+                  
                 }}
                 className="trashIcon fa-sharp fa-solid fa-square-check"
               ></i>
@@ -98,20 +110,57 @@ export default function Dashboard() {
     { field: "phone", headerName: "Phone Number", width: 130 },
     { field: "dob", headerName: "Date of Birth", width: 130 },
     { field: "email", headerName: "Email", width: 200 },
-    {
-      field: 'combinedField',
-      headerName: 'Address',
-      width: 300,
-      renderCell: (params) => {
-        const { sector, colony, plot, flat } = params.row;
-        return `${sector} ${colony} ${plot} ${flat}`;
-      },
-    },
+    { field: "colony", headerName: "Colony/Society", width: 130 },
+    { field: "sector", headerName: "Sector no.", width: 130 },
+    { field: "plot", headerName: "Plot No.", width: 130 },
+    { field: "flat", headerName: "Flat No.", width: 130 },
+
+
   ];
   const rows = userData;
+  const handleOpen = async (data) => {
+    setOpen(true);
+  };
+  const handleClose =() => {
+    
+    setOpen(false);
+  };
+  const handleConfirm = async() =>{
+    const data = `${pass},${age}`
+    const res = await ConfirmPass(data)
+    console.log(res);
+    setOpen(false);
+  }
 
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  };
   return (
     <div>
+    <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="child-modal-title"
+        aria-describedby="child-modal-description"
+      >
+      <Box sx={{ ...style, width: 300 }}> 
+          <h3 align="center"> Pass Number:</h3>
+          <h1 align="center">{pass}</h1>
+          <h4 style={{fontWeight:'normal'}}>Name: <span style={{textTransform:'capitalize', fontWeight:'bold'}}>{name}</span></h4>
+          <h4 style={{fontWeight:'normal'}}>Age Group: <span style={{textTransform:'capitalize', fontWeight:'bold'}}>{age}</span></h4>
+          <div style={{ display: "flex", justifyContent: "center", marginTop:20 }}>
+          <Button onClick={handleConfirm} variant="contained">Confirm</Button>
+          </div>
+        </Box>
+      </Modal>
     <div><Button onClick={()=>{navigate('/menu')}} variant="contained" color="success" style={{margin:20}}>Back</Button>
 </div>
     <div style={{ marginTop: 70 }}>

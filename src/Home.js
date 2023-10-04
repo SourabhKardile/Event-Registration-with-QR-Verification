@@ -313,7 +313,7 @@ textBelowQR.forEach((line, index) => {
                 />
               </div>
               <div className="input-box name">
-                <span className="details">Husband/Father Name</span>
+                <span className="details">Father/Husband Name</span>
                 <input
                   type="text"
                   placeholder="Enter Middle Name"
