@@ -1,11 +1,15 @@
-import React, { useState } from "react";
-import { AddDocumentAdult, AddDocumentChild } from "../methods";
+import React, { useState, useEffect } from "react";
+import { AddDocumentAdult, AddDocumentChild, EditDocument } from "../methods";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
+import { useLocation } from 'react-router-dom';
 
 export default function AdminRegister() {
+  const location = useLocation();
+  const rowData = location.state ? location.state.data : null;
+  
   const navigate = useNavigate();
   const [surname, setSurname] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -19,11 +23,30 @@ export default function AdminRegister() {
   const [email, setEmail] = useState("");
   const [flat, setFlat] = useState("");
   const [phone, setPhone] = useState("");
-
+  const [edit, setEdit] = useState(false);
   const [open, setOpen] = useState(false);
   const [addDoc, setAddDoc] = useState(false);
   const [passNo, setPassNo] = useState("");
   const [error, setError] = useState("")
+  const [editPass, setEditPass] = useState("")
+  useEffect(() => {
+  if(rowData){
+    setEditPass(rowData.id);
+    setSurname(rowData.surname);
+    setFirstName(rowData.firstName);
+    setMiddleName(rowData.middleName);
+    setColony(rowData.colony);
+    setSector(rowData.sector);
+    setCustomSector(rowData.customSector);
+    setPlot(rowData.plot);
+    setDob(rowData.dob);
+    setAgeGrp(rowData.ageGroup);
+    setEmail(rowData.email);
+    setPhone(rowData.phone);
+    setEdit(true);
+    
+  }
+}, [rowData]);
 
   const handleSelectChange = (event) => {
     const value = event.target.value;
@@ -31,6 +54,7 @@ export default function AdminRegister() {
   };
   const handleAgeChange = (event) => {
     setAgeGrp(event.target.id);
+
   };
 
   const handleSubmit = async (event) => {
@@ -68,12 +92,12 @@ export default function AdminRegister() {
       };
 
       let code = "";
-      if (ageGrp === "children") {
-        code = await AddDocumentChild(data);
-      } else {
-        code = await AddDocumentAdult(data);
-      }
-
+if (edit) {
+  code = await (ageGrp === "adult" ? EditDocument(data, editPass, "Adult") : EditDocument(data, editPass, "Children"));
+} else {
+  // Adding
+  code = await (ageGrp === "children" ? AddDocumentChild(data) : AddDocumentAdult(data));
+}
       setPassNo(code);
       handleOpen();
 
@@ -87,7 +111,11 @@ export default function AdminRegister() {
   const handleOpen = () => setOpen(true);
   const handleClose = async () => {
     setOpen(false);
-    navigate(0);
+    if(edit){
+      navigate('/menu')
+    }else{
+      navigate(0);
+    }
   };
   const style = {
     position: "absolute",
@@ -101,6 +129,8 @@ export default function AdminRegister() {
     p: 4,
   };
   return (
+    <><div><Button onClick={()=>{navigate('/menu')}} variant="contained" color="success" style={{margin:20}}>Back</Button>
+    </div>
     <div className="main">
       <Modal
         open={open}
@@ -139,6 +169,7 @@ export default function AdminRegister() {
               <div className="input-box name">
                 <span className="details">Surname</span>
                 <input
+                value={surname}
                   type="text"
                   placeholder="Enter Surname"
                   onChange={(e) => setSurname(e.target.value)}
@@ -148,6 +179,7 @@ export default function AdminRegister() {
               <div className="input-box name">
                 <span className="details">First Name</span>
                 <input
+                value={firstName}
                   type="text"
                   placeholder="Enter First Name"
                   onChange={(e) => setFirstName(e.target.value)}
@@ -156,6 +188,7 @@ export default function AdminRegister() {
               <div className="input-box name">
                 <span className="details">Father/Husband Name</span>
                 <input
+                value={middleName}
                   type="text"
                   placeholder="Enter Middle Name"
                   onChange={(e) => setMiddleName(e.target.value)}
@@ -167,6 +200,7 @@ export default function AdminRegister() {
                   Colony/Society name
                 </span>
                 <input
+                value={colony}
                   type="text"
                   placeholder="Enter Colony/Society name"
                   onChange={(e) => setColony(e.target.value)}
@@ -181,6 +215,7 @@ export default function AdminRegister() {
                 </span>
                 {sector === "custom" ? (
                   <input
+                  value={sector}
                     type="text"
                     placeholder="Others"
                     onChange={(e) => setCustomSector(e.target.value)}
@@ -212,6 +247,7 @@ export default function AdminRegister() {
                   </small>
                 </span>
                 <input
+                value={plot}
                   type="text"
                   placeholder="Enter Plot No."
                   onChange={(e) => setPlot(e.target.value)}
@@ -230,6 +266,7 @@ export default function AdminRegister() {
                 </span>
                 <input
                   type="text"
+                  value={flat}
                   placeholder="Enter Flat & Wing"
                   onChange={(e) => setFlat(e.target.value)}
                 />
@@ -238,6 +275,7 @@ export default function AdminRegister() {
                 <span className="details">Phone Number</span>
                 <input
                   type="number"
+                  value={phone}
                   placeholder="Enter your number"
                   onChange={(e) => setPhone(e.target.value)}
                 />
@@ -250,6 +288,8 @@ export default function AdminRegister() {
                 </span>
                 <input
                   type="email"
+                  
+                  value={email}
                   placeholder="Enter Email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -258,6 +298,7 @@ export default function AdminRegister() {
                 <span className="details">DOB</span>
                 <input
                   type="date"
+                  value={dob}
                   onChange={(e) => {
                     setDob(e.target.value);
                   }}
@@ -267,6 +308,7 @@ export default function AdminRegister() {
                 <input
                   type="radio"
                   name="age"
+                  disabled
                   id="children"
                   onChange={handleAgeChange}
                   checked={ageGrp === "children"}
@@ -275,6 +317,7 @@ export default function AdminRegister() {
                   type="radio"
                   name="age"
                   id="adult"
+                  disabled
                   onChange={handleAgeChange}
                   checked={ageGrp === "adult"}
                 />
@@ -305,12 +348,13 @@ export default function AdminRegister() {
                   <div className="loading-spinner"></div>
                 </div>
               ) : (
-                <input type="submit" value="Register" />
+                <input type="submit"  value={edit ? "Edit" : "Register"} />
               )}
             </div>
           </form>
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -50,7 +50,7 @@ export default function Dashboard() {
         return (
           <button
           onClick={() => {
-                alert(params.id);
+                navigate('/adminreg',{ state: { data: params.row } })
               }}
             style={{
               borderRadius:5,
@@ -114,6 +114,8 @@ export default function Dashboard() {
     { field: "sector", headerName: "Sector no.", width: 130 },
     { field: "plot", headerName: "Plot No.", width: 130 },
     { field: "flat", headerName: "Flat No.", width: 130 },
+    { field: "ageGroup", headerName: "Age Group", width: 130 },
+    { field: "customSector", headerName: "Custom Sector", width: 130 },
 
 
   ];

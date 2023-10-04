@@ -57,6 +57,38 @@ export const AddDocumentAdult = async (data) => {
     return null;
   }
 };
+
+export const EditDocument = async (data,id,ageGroup) => {
+  const pass = formatNumber(id);
+  const DocRef = doc(firestore, ageGroup, pass);
+  try {
+    const docSnap = await getDoc(DocRef);
+    if (docSnap.exists()) {
+      await updateDoc(DocRef, {
+        surname: data.surname,
+        firstName: data.firstName || "",
+        middleName: data.middleName || "",
+        colony: data.colony || "",
+        sector: data.sector || "",
+        plot: data.plot || "",
+        flat: data.flat || "",
+        dob: data.dob || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        customSector: data.customSector || "",
+        confirm: 1,
+      });
+      return id;
+    } else {
+      return false;
+      // Handle the case where the document is not found.
+    }
+  } catch (error) {
+    console.error('Error updating document:', error);
+    return false;
+    // Handle other errors that may occur during the update.
+  }
+};
 export const setUpRecaptcha = (number) => {
   const recaptchaVerifier = new RecaptchaVerifier(
     auth,
