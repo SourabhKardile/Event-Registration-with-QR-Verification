@@ -308,7 +308,7 @@ if (edit) {
                 <input
                   type="radio"
                   name="age"
-                  disabled
+                  disabled={edit}
                   id="children"
                   onChange={handleAgeChange}
                   checked={ageGrp === "children"}
@@ -317,7 +317,7 @@ if (edit) {
                   type="radio"
                   name="age"
                   id="adult"
-                  disabled
+                  disabled={edit}
                   onChange={handleAgeChange}
                   checked={ageGrp === "adult"}
                 />
