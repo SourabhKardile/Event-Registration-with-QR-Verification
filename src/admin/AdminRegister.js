@@ -31,6 +31,7 @@ export default function AdminRegister() {
   const [editPass, setEditPass] = useState("")
   useEffect(() => {
   if(rowData){
+    console.log(rowData);
     setEditPass(rowData.id);
     setSurname(rowData.surname);
     setFirstName(rowData.firstName);
@@ -40,6 +41,7 @@ export default function AdminRegister() {
     setCustomSector(rowData.customSector);
     setPlot(rowData.plot);
     setDob(rowData.dob);
+    setFlat(rowData.flat);
     setAgeGrp(rowData.ageGroup);
     setEmail(rowData.email);
     setPhone(rowData.phone);

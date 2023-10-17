@@ -7,7 +7,7 @@ export default function Landing() {
   return (
     <>
     <div className="navbar">
-  <Button variant="contained" onClick={()=>{navigate('/register')}} ><i className="fa-solid fa-pen"></i> Registration</Button>
+  <Button variant="contained" onClick={()=>{navigate('/register')}} style={{width:200}}><i className="fa-solid fa-pen"></i> Registration</Button>
 </div>
     <div className='backimage'>
     </div>

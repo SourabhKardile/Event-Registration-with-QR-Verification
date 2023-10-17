@@ -11,7 +11,7 @@ import AdminRegister from './admin/AdminRegister';
 import MaintenancePage from './MaintenancePage';
 
 
-const isMaintenanceMode = true;
+const isMaintenanceMode = false;
 
 function App() {
   return (
