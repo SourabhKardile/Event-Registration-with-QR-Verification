@@ -33,6 +33,7 @@ export default function Home() {
   const [addDoc, setAddDoc] = useState(false);
   const [open, setOpen] = useState(false);
   const [passNo, setPassNo] = useState("");
+  const [regfull, setregfull] = useState(false);
   useEffect(()=>{
     handleAgeChange();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -133,15 +134,24 @@ export default function Home() {
       }else{
         code = await AddDocumentAdult(data);
       }
-      
-      setPassNo(code);
-      handleOpen();
+      if(code===0){
+        handleOpenFull();
+      }else{
+
+        setPassNo(code);
+        handleOpen();
+      }
     } catch (err) {
       setError(err.toString());
     } finally {
       setAddDoc(false);
     }
   };
+  const handleOpenFull = () => setregfull(true);
+  const handleCloseFull = () => {
+    setregfull(false);
+    navigate(0);
+  }
 
   const SendOTP = async () => {
     setError("");
@@ -286,6 +296,23 @@ textBelowQR.forEach((line, index) => {
           </p>
           <div style={{textAlign:'center'}}> <Button onClick={handleClose} variant="contained">Download QRCode</Button></div>
          
+        </Box>
+      </Modal>
+      <Modal
+        open={regfull}
+        onClose={handleCloseFull}
+        aria-labelledby="child-modal-title"
+        aria-describedby="child-modal-description"
+      >
+        <Box sx={{ ...style, width: 400 }}>
+          <h3 align="center">Registration Full </h3>
+          <br />
+          <div style={{ textAlign: "center" }}>
+            {" "}
+            <Button onClick={handleCloseFull} variant="contained">
+              Close
+            </Button>
+          </div>
         </Box>
       </Modal>
       <div className="container">

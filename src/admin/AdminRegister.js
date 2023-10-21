@@ -29,6 +29,7 @@ export default function AdminRegister() {
   const [passNo, setPassNo] = useState("");
   const [error, setError] = useState("")
   const [editPass, setEditPass] = useState("")
+  const [regfull, setregfull] = useState(false);
   useEffect(() => {
   if(rowData){
     console.log(rowData);
@@ -101,15 +102,22 @@ if (edit) {
   code = await (ageGrp === "children" ? AddDocumentChild(data) : AddDocumentAdult(data));
 }
       setPassNo(code);
+      if(code === 0){
+        handleOpenFull();
+      }else{
       handleOpen();
 
       setAddDoc(true);
+    }
     } catch (e) {
       console.log(e);
     } finally {
       setAddDoc(false);
     }
   };
+  const handleOpenFull = () => setregfull(true);
+  const handleCloseFull = () => setregfull(false);
+
   const handleOpen = () => setOpen(true);
   const handleClose = async () => {
     setOpen(false);
@@ -134,6 +142,22 @@ if (edit) {
     <><div><Button onClick={()=>{navigate('/menu')}} variant="contained" color="success" style={{margin:20}}>Back</Button>
     </div>
     <div className="main">
+    <Modal
+        open={regfull}
+        onClose={handleCloseFull}
+        aria-labelledby="child-modal-title"
+        aria-describedby="child-modal-description"
+      >
+        <Box sx={{ ...style, width: 400 }}>
+          <h3 align="center">Registration Full </h3>
+          <div style={{ textAlign: "center" }}>
+            {" "}
+            <Button onClick={handleCloseFull} variant="contained">
+              Close
+            </Button>
+          </div>
+        </Box>
+      </Modal>
       <Modal
         open={open}
         onClose={handleClose}

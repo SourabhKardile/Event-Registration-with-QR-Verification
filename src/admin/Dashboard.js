@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router';
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { ConfirmPass } from "../methods";
+import { ConfirmPass, DeletePass } from "../methods";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ export default function Dashboard() {
   const [pass, setPass] = useState('');
   const [age, setAge] = useState('');
   const [name, setName] = useState('');
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -43,6 +44,40 @@ export default function Dashboard() {
   //MUI
 
   const columns = [
+    {
+      field: "delete",
+      headerName: "Delete",
+      renderCell: (params) => {
+        return (
+          <button
+          onClick={() => {
+            setAge(params.row.ageGroup)
+            setPass(params.id);
+            const name = `${params.row.firstName} ${params.row.middleName} ${params.row.surname}`
+            setName(name)
+            handleOpenDelete()
+              }}
+            style={{
+              borderRadius:5,
+              border: "none",
+              padding: 5,
+              paddingLeft:20,
+              paddingRight:20,
+              color: "#ffffff",
+              backgroundColor: "red",
+              margin: "5px",
+              cursor: "pointer",
+            }}
+          >
+            <i
+            style={{fontSize:17}}
+              
+              className="fa fa-ban"
+            ></i>
+          </button>
+        );
+      },
+    },
     {
       field: "button",
       headerName: "edit",
@@ -95,7 +130,6 @@ export default function Dashboard() {
                   const name = `${params.row.firstName} ${params.row.middleName} ${params.row.surname}`
                  setName(name)
                   handleOpen();
-                  
                 }}
                 className="trashIcon fa-sharp fa-solid fa-square-check"
               ></i>
@@ -120,6 +154,8 @@ export default function Dashboard() {
 
   ];
   const rows = userData;
+  const handleOpenDelete = () => setOpenDeleteModal(true);
+  const handleCloseDelete = () => setOpenDeleteModal(false);
   const handleOpen = async (data) => {
     setOpen(true);
   };
@@ -132,6 +168,11 @@ export default function Dashboard() {
     const res = await ConfirmPass(data)
     console.log(res);
     setOpen(false);
+  }
+  const handleDelete = async()=>{
+    const data = `${pass},${age}`
+    await DeletePass(data);
+    setOpenDeleteModal(false);
   }
 
   const style = {
@@ -160,6 +201,22 @@ export default function Dashboard() {
           <h4 style={{fontWeight:'normal'}}>Age Group: <span style={{textTransform:'capitalize', fontWeight:'bold'}}>{age}</span></h4>
           <div style={{ display: "flex", justifyContent: "center", marginTop:20 }}>
           <Button onClick={handleConfirm} variant="contained">Confirm</Button>
+          </div>
+        </Box>
+      </Modal>
+      <Modal
+        open={openDeleteModal}
+        onClose={handleCloseDelete}
+        aria-labelledby="child-modal-title"
+        aria-describedby="child-modal-description"
+      >
+      <Box sx={{ ...style, width: 300 }}> 
+          <h3 align="center"> Pass Number:</h3>
+          <h1 align="center">{pass}</h1>
+          <h4 style={{fontWeight:'normal'}}>Name: <span style={{textTransform:'capitalize', fontWeight:'bold'}}>{name}</span></h4>
+          <h4 style={{fontWeight:'normal'}}>Age Group: <span style={{textTransform:'capitalize', fontWeight:'bold'}}>{age}</span></h4>
+          <div style={{ display: "flex", justifyContent: "center", marginTop:20 }}>
+          <Button onClick={handleDelete} variant="contained" color="error">Delete</Button>
           </div>
         </Box>
       </Modal>
